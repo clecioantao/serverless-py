@@ -47,6 +47,7 @@ jobs:
           docker build --platform=linux/amd64 -f Dockerfile -t serverless-py-amd64 .
           docker tag serverless-py-amd64 ${{ secrets.CONTAINER_IMAGE_URL }}:latest
           docker tag serverless-py-amd64 ${{ secrets.CONTAINER_IMAGE_URL }}:${GITHUB_RUN_ID}
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://us-central1-docker.pkg.dev
           gcloud auth configure-docker ${{ secrets.GCLOUD_PROJECT_ID }}-docker.pkg.dev
           docker push ${{ secrets.CONTAINER_IMAGE_URL }} --all-tags
       - name: Deploy container to Cloud Run
