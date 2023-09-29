@@ -1,5 +1,5 @@
-# by Clecio
-ame: Test, Build, and Push to Google Cloud run
+# tests clecio
+name: Test, Build, and Push to Google Cloud run
 
 on: 
   workflow_dispatch:
