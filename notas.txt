@@ -1,0 +1,3 @@
+git remote add demo https://github.com/clecioantao/serverless-py.git
+
+git push demo --all

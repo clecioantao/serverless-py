@@ -1,0 +1,30 @@
+scripts:
+  runserver: uvicorn src.main:app --reload
+  installs: pip install -r requirements.txt
+  test: pytest src/tests.py
+  build: docker build -f Dockerfile -t serverless-py .
+  empty-build: docker build -f Dockerfile.empty -t empty-py .
+  empty-shell: docker exec -it empty-py /bin/bash
+  empty-run: docker run -p 8000:8000 --rm --name empty-py -it empty-py
+  run: docker run --env-file .env-prod -p 8000:8000 --rm --name serverless-py -it serverless-py
+  container_stage: docker run -e MODE=stage -p 8000:8000 --rm --name serverless-py -it serverless-py
+  container_prod: docker run -e PORT=8001  -e MODE=PRODA --env-file .env-prod  -p 8000:8001 --rm --name serverless-py -it serverless-py
+  build_run:
+  - rav run build
+  - rav run run
+  configure:
+  - gcloud auth configure-docker us-east1-docker.pkg.dev
+  - gcloud artifacts repositories create serverless-py-repo --repository-format=docker --location=us-east1
+  push:
+  - docker build --platform=linux/amd64 -f Dockerfile -t serverless-py-amd64 .
+  - docker tag serverless-py-amd64 us-east1-docker.pkg.dev/br-carrefour-devops/serverless-py-repo/serverless-py:latest
+  - docker tag serverless-py-amd64 us-east1-docker.pkg.dev/br-carrefour-devops/serverless-py-repo/serverless-py:v1
+  - docker tag serverless-py-amd64 us-east1-docker.pkg.dev/br-carrefour-devops/serverless-py-repo/serverless-py:v1.120
+  - docker push us-east1-docker.pkg.dev/br-carrefour-devops/serverless-py-repo/serverless-py --all-tags
+  deploy:
+    - gcloud run deploy serverless-py-run --image=us-east1-docker.pkg.dev/br-carrefour-devops/serverless-py-repo/serverless-py:latest --allow-unauthenticated --region=us-east1 --project=br-carrefour-devops
+  cloud_run_perms:
+    - gcloud secrets add-iam-policy-binding py_env_file --member='serviceAccount:60927173241-compute@developer.gserviceaccount.com' --role='roles/secretmanager.secretAccessor'
+  cloud_run_perms_remove:
+    - gcloud secrets remove-iam-policy-binding py_env_file --member='serviceAccount:60927173241-compute@developer.gserviceaccount.com' --role='roles/secretmanager.secretAccessor'
+
