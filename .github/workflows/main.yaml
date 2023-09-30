@@ -51,11 +51,8 @@ jobs:
           docker push ${{ secrets.CONTAINER_IMAGE_URL }} --all-tags
       - name: Deploy container to Cloud Run
         run: |
-          gcloud run deploy serverless-py \
-            --image=${{ secrets.CONTAINER_IMAGE_URL }}:${GITHUB_RUN_ID} \
-            --allow-unauthenticated \
-            --region=${{ secrets.GCLOUD_REGION }} \
-            --project=${{ secrets.GCLOUD_PROJECT_ID }}
+          gcloud run deploy serverless-py-run --image=us-east1-docker.pkg.dev/br-carrefour-devops/serverless-py-repo/serverless-py:latest --allow-unauthenticated --region=us-east1 --project=br-carrefour-devops
+
 
       # - id: 'auth'
       #   name: 'Authenticate to Google Cloud'
@@ -76,3 +73,9 @@ jobs:
       #         --allow-unauthenticated \
       #         --region=${{ secrets.GCLOUD_REGION }} \
       #         --project=${{ secrets.GCLOUD_PROJECT_ID }}
+      
+                # gcloud run deploy serverless-py \
+          #   --image=${{ secrets.CONTAINER_IMAGE_URL }}:${GITHUB_RUN_ID} \
+          #   --allow-unauthenticated \
+          #   --region=${{ secrets.GCLOUD_REGION }} \
+          #   --project=${{ secrets.GCLOUD_PROJECT_ID }}
